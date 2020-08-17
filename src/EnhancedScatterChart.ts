@@ -150,12 +150,7 @@ import {
     EnhancedScatterChartData,
     EnhancedScatterChartDataPoint,
     EnhancedScatterChartMeasureMetadata,
-    EnhancedScatterChartMeasureMetadataIndexes,
-    EnhancedScatterDataRange,
-    EnhancedScatterChartRadiusData,
-    CalculateScaleAndDomainOptions,
-    ChartAxesLabels,
-    ElementProperties
+    EnhancedScatterChartMeasureMetadataIndexes
 }                                                                                          from './dataInterfaces';
 import * as gradientUtils                                                                  from './gradientUtils';
 import {tooltipBuilder}                                                                    from './tooltipBuilder';
@@ -352,19 +347,6 @@ export class EnhancedScatterChart implements IVisual {
         return result ? result.value : defaultValue;
     }
 
-    private static getDefinedNumberByCategoryId(column: DataViewValueColumn, index: number, valueTypeDescriptor: ValueTypeDescriptor): number {
-        const columnValue = column.values[index];
-        const isDate = valueTypeDescriptor && valueTypeDescriptor.dateTime;
-        const value = isDate ? new Date(<any>columnValue) : columnValue;
-
-        return column
-        && column.values
-        && !(columnValue === null)
-        && !isNaN(<number>value)
-            ? Number(value)
-            : null;
-    }
-
     constructor(options: VisualConstructorOptions) {
         if (window.location !== window.parent.location) {
             require('core-js/stable');
@@ -442,9 +424,7 @@ export class EnhancedScatterChart implements IVisual {
             grouped: DataViewValueColumnGroup[] = dataValues.grouped(),
             dvSource: DataViewMetadataColumn = dataValues.source,
             scatterMetadata: EnhancedScatterChartMeasureMetadata = EnhancedScatterChart.getMetadata(categories, grouped),
-            categoryIndex: number = scatterMetadata.idx.category,
-            useShape: boolean = scatterMetadata.idx.image >= EnhancedScatterChart.MinIndex,
-            useCustomColor: boolean = scatterMetadata.idx.colorFill >= EnhancedScatterChart.MinIndex;
+            categoryIndex: number = scatterMetadata.idx.category;
 
         if (dataViewCategorical.categories
             && dataViewCategorical.categories.length > 0
@@ -465,12 +445,7 @@ export class EnhancedScatterChart implements IVisual {
             categoryFormatter = valueFormatter.createDefaultFormatter(null);
         }
 
-        const sizeRange: ValueRange<number> = EnhancedScatterChart.getSizeRangeForGroups(
-            grouped,
-            scatterMetadata.idx.size
-        );
 
-        settings.fillPoint.isHidden = !!(sizeRange && sizeRange.min);
 
         const colorHelper: ColorHelper = new ColorHelper(
             colorPalette,
@@ -511,11 +486,11 @@ export class EnhancedScatterChart implements IVisual {
             settings,
             dataPoints,
             legendDataPoints,
-            sizeRange,
+            sizeRange: undefined,
             hasGradientRole,
             hasDynamicSeries,
-            useShape,
-            useCustomColor,
+            useShape: undefined,
+            useCustomColor: undefined,
             xCol: scatterMetadata.cols.x,
             yCol: scatterMetadata.cols.y,
             axesLabels: scatterMetadata.axesLabels,
@@ -702,18 +677,7 @@ export class EnhancedScatterChart implements IVisual {
         return {
             idx: {
                 category: categoryIndex,
-                x: xIndex,
-                y: yIndex,
-                size: sizeIndex,
-                colorFill: colorFillIndex,
-                shape: shapeIndex,
-                image: imageIndex,
-                rotation: rotationIndex,
-                backdrop: backdropIndex,
-                xStart: xStartIndex,
-                xEnd: xEndIndex,
-                yStart: yStartIndex,
-                yEnd: yEndIndex
+                x: xIndex
             },
             cols: {
                 x: xCol,
@@ -753,45 +717,6 @@ export class EnhancedScatterChart implements IVisual {
             seriesValues
         );
 
-        const measureY: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-            indicies.y,
-            seriesValues
-        );
-
-        const measureSize: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-            indicies.size,
-            seriesValues
-        );
-
-        const measureShape: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-            indicies.shape,
-            seriesValues
-        );
-
-        const measureRotation: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-            indicies.rotation,
-            seriesValues
-        );
-
-        const measureXStart: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-            indicies.xStart,
-            seriesValues
-        );
-
-        const measureXEnd: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-            indicies.xEnd,
-            seriesValues
-        );
-
-        const measureYStart: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-            indicies.yStart,
-            seriesValues
-        );
-
-        const measureYEnd: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-            indicies.yEnd,
-            seriesValues
-        );
 
         return {
             // measureX,

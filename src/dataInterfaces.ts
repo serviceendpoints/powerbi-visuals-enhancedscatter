@@ -68,17 +68,7 @@ export interface ElementProperties {
 export interface EnhancedScatterChartMeasureMetadataIndexes {
     category?: number;
     x?: number;
-    y?: number;
-    size?: number;
-    colorFill?: number;
-    shape?: number;
-    image?: number;
-    rotation?: number;
-    backdrop?: number;
-    xStart?: number;
-    xEnd?: number;
-    yStart?: number;
-    yEnd?: number;
+
 }
 
 export interface EnhancedScatterChartMeasureMetadataColumns {
@@ -201,30 +191,3 @@ export interface EnhancedScatterChartData {
     settings: Settings;
 }
 
-export interface EnhancedScatterDataRange {
-    minRange: number;
-    maxRange: number;
-    delta: number;
-}
-
-export interface CalculateScaleAndDomainOptions {
-    viewport: IViewport;
-    margin: IMargin;
-    showCategoryAxisLabel: boolean;
-    showValueAxisLabel: boolean;
-    forceMerge: boolean;
-    categoryAxisScaleType: string;
-    valueAxisScaleType: string;
-    trimOrdinalDataOnOverflow: boolean;
-    // optional
-    playAxisControlLayout?: IRect;
-    forcedTickCount?: number;
-    forcedYDomain?: any[];
-    forcedXDomain?: any[];
-    ensureXDomain?: NumberRange;
-    ensureYDomain?: NumberRange;
-    categoryAxisDisplayUnits?: number;
-    categoryAxisPrecision?: number;
-    valueAxisDisplayUnits?: number;
-    valueAxisPrecision?: number;
-}
