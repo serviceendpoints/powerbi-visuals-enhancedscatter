@@ -174,9 +174,7 @@ export class EnhancedScatterChart implements IVisual {
 
     private static AxisGraphicsContextClassName: string = 'axisGraphicsContext';
     private static ClassName: string = 'enhancedScatterChart';
-    private static MainGraphicsContextClassName: string = 'mainGraphicsContext';
 
-    private static MinAmountOfTicks: number = 0;
     private static MinAmountOfCategories: number = 0;
     private static MinAmountOfValues: number = 0;
 
@@ -194,8 +192,6 @@ export class EnhancedScatterChart implements IVisual {
     private static DefaultMarginValue: number = 1;
 
     public static SvgScrollableSelector: ClassAndSelector = createClassAndSelector('svgScrollable');
-
-    public static XAxisSelector: ClassAndSelector = createClassAndSelector('x axis');
 
     private static NumberSignZero: number = 0;
     private static NumberSignPositive: number = 1;
