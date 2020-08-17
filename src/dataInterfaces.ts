@@ -23,15 +23,6 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-import powerbiVisualsApi from 'powerbi-visuals-api';
-
-import IViewport = powerbiVisualsApi.IViewport;
-import DataViewMetadataColumn = powerbiVisualsApi.DataViewMetadataColumn;
-import DataViewValueColumn = powerbiVisualsApi.DataViewValueColumn;
-import NumberRange = powerbiVisualsApi.NumberRange;
-
-// powerbi.visuals
-import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 
 // powerbi.extensibility.utils.interactivity
 import {interactivitySelectionService as interactivityService} from 'powerbi-visuals-utils-interactivityutils';
@@ -52,22 +43,8 @@ export interface EnhancedScatterChartMeasureMetadataIndexes {
 
 }
 
-export interface EnhancedScatterChartMeasureMetadataColumns {
-    x?: DataViewMetadataColumn;
-    y?: DataViewMetadataColumn;
-    size?: DataViewMetadataColumn;
-}
-
 export interface EnhancedScatterChartMeasureMetadata {
     idx: EnhancedScatterChartMeasureMetadataIndexes;
-    cols: EnhancedScatterChartMeasureMetadataColumns;
-    axesLabels: ChartAxesLabels;
-}
-
-export interface ChartAxesLabels {
-    x: string;
-    y: string;
-    y2?: string;
 }
 
 export interface EnhancedScatterChartDataPoint extends SelectableDataPoint,
@@ -76,27 +53,11 @@ export interface EnhancedScatterChartDataPoint extends SelectableDataPoint,
     formattedCategory: () => string;
 }
 
-export interface EnhancedScatterChartAxesLabels {
-    x: string;
-    y: string;
-    y2?: string;
-}
-
 export interface EnhancedScatterChartData {
-    useShape: boolean;
-    useCustomColor: boolean;
-    xCol: DataViewMetadataColumn;
-    yCol: DataViewMetadataColumn;
+    settings: Settings;
     dataPoints: EnhancedScatterChartDataPoint[];
     legendDataPoints: LegendDataPoint[];
-    axesLabels: EnhancedScatterChartAxesLabels;
-    size?: DataViewMetadataColumn;
-    sizeRange: NumberRange;
-    hasDynamicSeries?: boolean;
     hasGradientRole?: boolean;
-    colorBorder?: boolean;
-    colorByCategory?: boolean;
-    selectedIds: ISelectionId[];
-    settings: Settings;
+    hasDynamicSeries?: boolean;
 }
 

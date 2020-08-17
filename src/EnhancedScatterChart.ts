@@ -30,9 +30,6 @@ import * as d3 from 'd3';
 
 import powerbiVisualsApi from 'powerbi-visuals-api';
 
-// d3
-type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
-
 // powerbi
 import DataView = powerbiVisualsApi.DataView;
 import IViewport = powerbiVisualsApi.IViewport;
@@ -49,7 +46,6 @@ import VisualObjectInstanceEnumerationObject = powerbiVisualsApi.VisualObjectIns
 import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
 import ISandboxExtendedColorPalette = powerbiVisualsApi.extensibility.ISandboxExtendedColorPalette;
 import IVisualEventService = powerbiVisualsApi.extensibility.IVisualEventService;
-import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
 // powerbi.visuals
 import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
@@ -63,12 +59,6 @@ import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualC
 import {dataRoleHelper as DataRoleHelper} from 'powerbi-visuals-utils-dataviewutils';
 import getMeasureIndexOfRole = DataRoleHelper.getMeasureIndexOfRole;
 import getCategoryIndexOfRole = DataRoleHelper.getCategoryIndexOfRole;
-
-// powerbi.extensibility.utils.svg
-import * as SVGUtil from 'powerbi-visuals-utils-svgutils';
-import IMargin = SVGUtil.IMargin;
-import ClassAndSelector = SVGUtil.CssConstants.ClassAndSelector;
-import createClassAndSelector = SVGUtil.CssConstants.createClassAndSelector;
 
 // powerbi.extensibility.utils.chart
 import {
@@ -102,9 +92,6 @@ import * as gradientUtils                            from './gradientUtils';
 
 export class EnhancedScatterChart implements IVisual {
 
-    private static AxisGraphicsContextClassName: string = 'axisGraphicsContext';
-    private static ClassName: string = 'enhancedScatterChart';
-
     private static MinAmountOfCategories: number = 0;
 
     private static EmptyString: string = '';
@@ -112,10 +99,6 @@ export class EnhancedScatterChart implements IVisual {
     private static DefaultSelectionStateOfTheDataPoint: boolean = false;
 
     private static MinAmountOfDataPointsInTheLegend: number = 1;
-
-    private static DefaultMarginValue: number = 1;
-
-    public static SvgScrollableSelector: ClassAndSelector = createClassAndSelector('svgScrollable');
 
     private static NumberSignZero: number = 0;
     private static NumberSignPositive: number = 1;
@@ -125,28 +108,18 @@ export class EnhancedScatterChart implements IVisual {
 
     public static ColumnCategory: string = 'Category';
     public static ColumnX: string = 'X';
-    public static ColumnY: string = 'Y';
-    public static ColumnSize: string = 'Size';
 
     private legend: ILegend;
 
     private element: HTMLElement;
-    private svgScrollable: Selection<any>;
-    private axisGraphicsContext: Selection<any>;
-    private axisGraphicsContextScrollable: Selection<any>;
-
-    private svg: Selection<any>;
 
     private data: EnhancedScatterChartData;
 
     private colorPalette: ISandboxExtendedColorPalette;
 
     private eventService: IVisualEventService;
-    private selectionManager: ISelectionManager;
 
     private visualHost: IVisualHost;
-
-    private margin: IMargin;
 
     private viewport: IViewport = {
         width: 0,
@@ -167,31 +140,7 @@ export class EnhancedScatterChart implements IVisual {
         this.visualHost = options.host;
         this.colorPalette = options.host.colorPalette;
 
-        this.selectionManager = this.visualHost.createSelectionManager();
         this.eventService = options.host.eventService;
-
-        this.margin = {
-            top: EnhancedScatterChart.DefaultMarginValue,
-            right: EnhancedScatterChart.DefaultMarginValue,
-            bottom: EnhancedScatterChart.DefaultMarginValue,
-            left: EnhancedScatterChart.DefaultMarginValue
-        };
-
-        this.svg = d3.select(this.element)
-                     .append('svg')
-                     .classed(EnhancedScatterChart.ClassName, true);
-
-        this.axisGraphicsContext = this.svg
-                                       .append('g')
-                                       .classed(EnhancedScatterChart.AxisGraphicsContextClassName, true);
-
-        this.svgScrollable = this.svg
-                                 .append('svg')
-                                 .classed(EnhancedScatterChart.SvgScrollableSelector.className, true);
-
-        this.axisGraphicsContextScrollable = this.svgScrollable
-                                                 .append('g')
-                                                 .classed(EnhancedScatterChart.AxisGraphicsContextClassName, true);
 
         this.legend = createLegend(
             this.element,
@@ -280,16 +229,8 @@ export class EnhancedScatterChart implements IVisual {
             settings,
             dataPoints,
             legendDataPoints,
-            sizeRange: undefined,
             hasGradientRole,
-            hasDynamicSeries,
-            useShape: undefined,
-            useCustomColor: undefined,
-            xCol: scatterMetadata.cols.x,
-            yCol: scatterMetadata.cols.y,
-            axesLabels: scatterMetadata.axesLabels,
-            selectedIds: [],
-            size: scatterMetadata.cols.size
+            hasDynamicSeries
         };
     }
 
@@ -395,46 +336,12 @@ export class EnhancedScatterChart implements IVisual {
         grouped: DataViewValueColumnGroup[]
     ): EnhancedScatterChartMeasureMetadata {
         let categoryIndex: number = getCategoryIndexOfRole(categories, EnhancedScatterChart.ColumnCategory),
-            xIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnX),
-            yIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnY),
-            sizeIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnSize),
-            xCol: DataViewMetadataColumn,
-            yCol: DataViewMetadataColumn,
-            sizeCol: DataViewMetadataColumn,
-            xAxisLabel: string = EnhancedScatterChart.EmptyString,
-            yAxisLabel: string = EnhancedScatterChart.EmptyString;
-
-        if (grouped && grouped.length) {
-            const firstGroup: DataViewValueColumnGroup = grouped[0];
-
-            if (xIndex >= 0) {
-                xCol = firstGroup.values[xIndex].source;
-                xAxisLabel = firstGroup.values[xIndex].source.displayName;
-            }
-
-            if (yIndex >= 0) {
-                yCol = firstGroup.values[yIndex].source;
-                yAxisLabel = firstGroup.values[yIndex].source.displayName;
-            }
-
-            if (sizeIndex >= 0) {
-                sizeCol = firstGroup.values[sizeIndex].source;
-            }
-        }
+            xIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnX);
 
         return {
             idx: {
                 category: categoryIndex,
                 x: xIndex
-            },
-            cols: {
-                x: xCol,
-                y: yCol,
-                size: sizeCol
-            },
-            axesLabels: {
-                x: xAxisLabel,
-                y: yAxisLabel
             }
         };
     }
@@ -502,19 +409,9 @@ export class EnhancedScatterChart implements IVisual {
     private getDefaultData(settings?: Settings): EnhancedScatterChartData {
         return {
             settings,
-            xCol: undefined,
-            yCol: undefined,
             dataPoints: [],
             legendDataPoints: [],
-            axesLabels: {
-                x: EnhancedScatterChart.EmptyString,
-                y: EnhancedScatterChart.EmptyString
-            },
-            selectedIds: [],
-            sizeRange: undefined,
-            hasDynamicSeries: false,
-            useShape: false,
-            useCustomColor: false
+            hasDynamicSeries: false
         };
     }
 
@@ -572,7 +469,7 @@ export class EnhancedScatterChart implements IVisual {
             width: this.viewport.width
         });
 
-        legendModule.positionChartArea(this.svg, legend);
+        legendModule.positionChartArea(null, legend);
     }
 
     /**
