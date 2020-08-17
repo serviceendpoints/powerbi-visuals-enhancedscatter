@@ -384,9 +384,8 @@ export class EnhancedScatterChart implements IVisual {
                                                          .withCategory(category, categoryIdx)
                                                          .withSeries(dataValues, grouping)
                                                          .createSelectionId();
-                debugger;
-                const currentFill: string = parsedColorFill || color;
-                const fill: string = settings.fillPoint.show || settings.fillPoint.isHidden ? currentFill : null;
+
+                const fill: string = parsedColorFill || color;
 
                 dataPoints.push({
                     fill,
@@ -550,7 +549,6 @@ export class EnhancedScatterChart implements IVisual {
             settings,
             options
         )).instances || [];
-
         switch (options.objectName) {
             case 'dataPoint': {
 
@@ -560,13 +558,6 @@ export class EnhancedScatterChart implements IVisual {
                 }
 
                 return this.enumerateDataPoints(instances, settings.dataPoint);
-            }
-            case 'fillPoint': {
-                if (settings.fillPoint.isHidden) {
-                    return [];
-                }
-
-                break;
             }
             case 'legend': {
                 if (!this.data || !this.data.hasDynamicSeries) {

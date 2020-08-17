@@ -45,14 +45,7 @@ export class LegendSettings {
     public fontSize: number = 9;
 }
 
-export class FillPointSettings {
-    public show: boolean = false;
-    public isHidden: boolean = true;
-}
-
 export class Settings extends DataViewObjectsParser {
     public dataPoint: DataPointSettings = new DataPointSettings();
     public legend: LegendSettings = new LegendSettings();
-    public fillPoint: FillPointSettings = new FillPointSettings();
-
 }
