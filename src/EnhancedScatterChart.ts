@@ -616,63 +616,12 @@ export class EnhancedScatterChart implements IVisual {
     private parseSettings(dataView: DataView, colorHelper: ColorHelper): Settings {
         const settings: Settings = <Settings>Settings.parse(dataView);
 
-        settings.dataPoint.defaultColor = colorHelper.getHighContrastColor(
-            'foreground',
-            settings.dataPoint.defaultColor
-        );
-
-        settings.dataPoint.strokeWidth = colorHelper.isHighContrast
-            ? 2
-            : settings.dataPoint.strokeWidth;
-
         settings.legend.labelColor = colorHelper.getHighContrastColor(
             'foreground',
             settings.legend.labelColor
         );
 
-        settings.categoryLabels.show = settings.categoryLabels.show || colorHelper.isHighContrast;
-
-        settings.categoryLabels.color = colorHelper.getHighContrastColor(
-            'foreground',
-            settings.categoryLabels.color
-        );
-
-        settings.fillPoint.show = colorHelper.isHighContrast
-            ? true
-            : settings.fillPoint.show;
-
-        settings.outline.show = colorHelper.isHighContrast
-            ? false
-            : settings.outline.show;
-
-        settings.crosshair.color = colorHelper.getHighContrastColor(
-            'foreground',
-            settings.crosshair.color
-        );
-
-        this.parseAxisSettings(settings.categoryAxis, colorHelper);
-        this.parseAxisSettings(settings.valueAxis, colorHelper);
-
-        settings.backdrop.show = settings.backdrop.show && !colorHelper.isHighContrast;
-
         return settings;
-    }
-
-    private parseAxisSettings(axisSettings: AxisSettings, colorHelper: ColorHelper): void {
-        axisSettings.axisColor = colorHelper.getHighContrastColor(
-            'foreground',
-            axisSettings.axisColor
-        );
-
-        axisSettings.zeroLineColor = colorHelper.getHighContrastColor(
-            'foreground',
-            axisSettings.zeroLineColor
-        );
-
-        axisSettings.lineColor = colorHelper.getHighContrastColor(
-            'foreground',
-            axisSettings.lineColor
-        );
     }
 
     private static createSeriesLegend(
