@@ -173,31 +173,12 @@ interface ShapeEntry {
 }
 
 export class EnhancedScatterChart implements IVisual {
-    private static MaxMarginFactor: number = 0.25;
-
-    private static AnimationDuration: number = 0;
-
-    private static LabelMargin: number = 8;
 
     private static AxisGraphicsContextClassName: string = 'axisGraphicsContext';
     private static ClassName: string = 'enhancedScatterChart';
     private static MainGraphicsContextClassName: string = 'mainGraphicsContext';
     private static AxisFontSize: number = 11;
     private static CrosshairTextMargin: number = 5;
-    private static BubbleRadius = 3 * 2;
-
-    private static MinSizeRange = 200;
-    private static MaxSizeRange = 3000;
-
-    private static AreaOf300By300Chart = 90000;
-
-    private static DataLabelXOffset: number = 2;
-    private static DataLabelYOffset: number = 1.8;
-
-    private static TextProperties: TextProperties = {
-        fontFamily: 'helvetica, arial, sans-serif',
-        fontSize: PixelConverter.toString(EnhancedScatterChart.AxisFontSize)
-    };
 
     private static MinAmountOfTicks: number = 0;
     private static MinAmountOfCategories: number = 0;
@@ -207,14 +188,10 @@ export class EnhancedScatterChart implements IVisual {
 
     private static EmptyString: string = '';
 
-    private static DefaultPositionOfCrosshair: number = 0;
-
     private static DefaultCrosshairYPosition: number = 1;
     private static CrosshairPrecision: number = 0.00001;
     private static CrosshairStartPosition: number = 0;
     private static CrosshairScaleFactor: number = 100;
-
-    private static DefaultBackgroundPosition: number = 0;
 
     private static DefaultSelectionStateOfTheDataPoint: boolean = false;
     private static DefaultContentPosition: number = 8;
@@ -223,39 +200,6 @@ export class EnhancedScatterChart implements IVisual {
 
     private static MinAmountOfDataPointsInTheLegend: number = 1;
 
-    private static isScrollbarVisible: boolean = false;
-
-    private static DefaultBubbleRadius: number = 0;
-
-    private static BubbleRadiusDivider: number = 2;
-
-    private static DefaultBubbleRatio: number = 1;
-
-    private static DefaultProjectedSize: number = 0;
-    private static MinDelta: number = 0;
-    private static ProjectedSizeFactor: number = 2;
-
-    private static RadiusMultiplexer: number = 4;
-
-    private static DefaultAxisXTickPadding: number = 5;
-    private static DefaultAxisYTickPadding: number = 10;
-
-    private static MinAnimationDuration: number = 0;
-
-    private static DefaultPosition: number = 0;
-
-    private static MinImageViewport: IViewport = {
-        width: 0,
-        height: 0
-    };
-
-    private static DefaultMargin: IMargin = {
-        top: 8,
-        right: 0,
-        bottom: 25,
-        left: 0
-    };
-
     private static MinViewport: IViewport = {
         width: 0,
         height: 0
@@ -263,29 +207,7 @@ export class EnhancedScatterChart implements IVisual {
 
     private static DefaultMarginValue: number = 1;
 
-    private static MaxIterations: number = 2;
-    private static DefaultNumIterations: number = 0;
-    private static DefaultValueOfDoneWithMargins: boolean = false;
-
-    private static AxisSide: number = 10;
-    private static SecondYAxisSide: number = 15;
-    private static SecondAxisSide: number = 20;
-    private static XMaxOffset: number = 12;
-    private static AdditionalXMaxOffset: number = 18;
-
-    private static DefaultSizeMeasure: number = 0;
-
-    private static EmptyDataValue: number = 0;
-
-    private static DefaultCategoryAxisFillColor: string = '#333';
-
-    private static TextAnchor: string = 'middle';
-
     public static CrosshairCanvasSelector: ClassAndSelector = createClassAndSelector('crosshairCanvas');
-    public static CrosshairLineSelector: ClassAndSelector = createClassAndSelector('crosshairLine');
-    public static CrosshairVerticalLineSelector: ClassAndSelector = createClassAndSelector('crosshairVerticalLine');
-    public static CrosshairHorizontalLineSelector: ClassAndSelector = createClassAndSelector('crosshairHorizontalLine');
-    public static CrosshairTextSelector: ClassAndSelector = createClassAndSelector('crosshairText');
 
     public static SvgScrollableSelector: ClassAndSelector = createClassAndSelector('svgScrollable');
 
@@ -294,25 +216,6 @@ export class EnhancedScatterChart implements IVisual {
 
     public static XAxisSelector: ClassAndSelector = createClassAndSelector('x axis');
     public static YAxisSelector: ClassAndSelector = createClassAndSelector('y axis');
-
-    public static TickSelector: ClassAndSelector = createClassAndSelector('tick');
-    public static ZeroLineSelector: ClassAndSelector = createClassAndSelector('zero-line');
-
-    private static DotSelector: ClassAndSelector = createClassAndSelector('dot');
-    private static ImageSelector: ClassAndSelector = createClassAndSelector('img');
-
-    private static ScatterMarkersSelector: ClassAndSelector = createClassAndSelector('ScatterMarkers');
-    private static MarkerShapeSelector: ClassAndSelector = createClassAndSelector('markershape');
-    private static MarkerImageSelector: ClassAndSelector = createClassAndSelector('markerimage');
-
-    private static XAxisLabelSelector: ClassAndSelector = createClassAndSelector('xAxisLabel');
-    private static YAxisLabelSelector: ClassAndSelector = createClassAndSelector('yAxisLabel');
-
-    private static AxisLabelOffset: number = 2;
-    private static YAxisLabelTransformRotate: string = 'rotate(-90)';
-    private static DefaultDY: string = '1em';
-
-    private static DefaultAxisOffset: number = 0;
 
     private static MinAxisValue: number = 0;
     private static MaxAxisValue: number = 10;
@@ -325,8 +228,7 @@ export class EnhancedScatterChart implements IVisual {
     public static MaxTranslateValue: number = 1e+25;
     public static MinTranslateValue: number = 1e-25;
 
-    public static DefaultBubbleOpacity = 0.85;
-    public static DimmedBubbleOpacity = 0.4;
+
 
     public static ColumnCategory: string = 'Category';
     public static ColumnSeries: string = 'Series';
@@ -377,7 +279,6 @@ export class EnhancedScatterChart implements IVisual {
     private crosshairTextSelection: Selection<any>;
 
     private data: EnhancedScatterChartData;
-    private dataView: DataView;
 
     private xAxisProperties: IAxisProperties;
     private yAxisProperties: IAxisProperties;
@@ -386,22 +287,12 @@ export class EnhancedScatterChart implements IVisual {
     private interactivityService: IInteractivityService<BaseDataPoint>;
     private eventService: IVisualEventService;
     private selectionManager: ISelectionManager;
-    private yAxisOrientation: string;
 
     private scrollY: boolean = true;
     private scrollX: boolean = true;
 
     private visualHost: IVisualHost;
 
-    private bottomMarginLimit: number;
-    private leftRightMarginLimit: number;
-    private isXScrollBarVisible: boolean;
-    private isYScrollBarVisible: boolean;
-    private ScrollBarWidth = 10;
-    private svgDefaultImage: string = '';
-    private oldBackdrop: string;
-
-    private keyArray: string[] = [];
 
     private _margin: IMargin;
     private get margin(): IMargin {
@@ -701,8 +592,6 @@ export class EnhancedScatterChart implements IVisual {
             xAxis.show();
         }
     }
-
-
 
     public parseData(
         dataView: DataView,
