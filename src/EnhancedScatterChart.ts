@@ -87,7 +87,6 @@ import {
     EnhancedScatterChartMeasureMetadata,
     EnhancedScatterChartMeasureMetadataIndexes
 }                                                    from './dataInterfaces';
-import * as gradientUtils                            from './gradientUtils';
 
 export class EnhancedScatterChart implements IVisual {
 
@@ -220,13 +219,11 @@ export class EnhancedScatterChart implements IVisual {
         let legendTitle: string = legendParseResult.legendTitle;
 
         this.changeSettingsAndMetadata(settings, legendTitle);
-        const hasGradientRole: boolean = gradientUtils.hasGradientRole(dataViewCategorical);
 
         return {
             settings,
             dataPoints,
             legendDataPoints,
-            hasGradientRole,
             hasDynamicSeries
         };
     }
@@ -251,7 +248,7 @@ export class EnhancedScatterChart implements IVisual {
 
         if (hasDynamicSeries) {
             const formatString: string = valueFormatter.getFormatStringByColumn(dvSource);
-
+            debugger;
             legendDataPoints = EnhancedScatterChart.createSeriesLegend(
                 visualHost,
                 dataValues,
@@ -316,7 +313,7 @@ export class EnhancedScatterChart implements IVisual {
             const selectionId: ISelectionId = visualHost.createSelectionIdBuilder()
                                                         .withSeries(dataValues, grouping)
                                                         .createSelectionId();
-
+            debugger;
             legendItems.push({
                 color,
                 label: valueFormatter.format(grouping.name, formatString),
@@ -412,7 +409,7 @@ export class EnhancedScatterChart implements IVisual {
         const dataView: DataView = options
             && options.dataViews
             && options.dataViews[0];
-
+        debugger;
         this.viewport = options && options.viewport
             ? {...options.viewport}
             : {
@@ -506,7 +503,7 @@ export class EnhancedScatterChart implements IVisual {
         if (!this.data) {
             return instances;
         }
-
+        debugger;
         if (this.data.hasDynamicSeries) {
             return this.data.legendDataPoints.map((legendDataPoint: LegendDataPoint) => {
                 return {
@@ -551,11 +548,6 @@ export class EnhancedScatterChart implements IVisual {
         )).instances || [];
         switch (options.objectName) {
             case 'dataPoint': {
-
-                if (this.data && this.data.hasGradientRole) {
-                    return [];
-
-                }
 
                 return this.enumerateDataPoints(instances, settings.dataPoint);
             }

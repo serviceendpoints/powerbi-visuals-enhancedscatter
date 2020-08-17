@@ -55,7 +55,6 @@ export interface EnhancedScatterChartData {
     settings: Settings;
     dataPoints: EnhancedScatterChartDataPoint[];
     legendDataPoints: LegendDataPoint[];
-    hasGradientRole?: boolean;
     hasDynamicSeries?: boolean;
 }
 
