@@ -39,8 +39,6 @@ import {Settings} from './settings';
 
 export interface EnhancedScatterChartMeasureMetadataIndexes {
     category?: number;
-    x?: number;
-
 }
 
 export interface EnhancedScatterChartMeasureMetadata {

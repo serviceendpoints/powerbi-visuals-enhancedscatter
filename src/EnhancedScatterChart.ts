@@ -57,7 +57,6 @@ import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualC
 
 // powerbi.extensibility.utils.dataview
 import {dataRoleHelper as DataRoleHelper} from 'powerbi-visuals-utils-dataviewutils';
-import getMeasureIndexOfRole = DataRoleHelper.getMeasureIndexOfRole;
 import getCategoryIndexOfRole = DataRoleHelper.getCategoryIndexOfRole;
 
 // powerbi.extensibility.utils.chart
@@ -107,7 +106,6 @@ export class EnhancedScatterChart implements IVisual {
     public static MinTranslateValue: number = 1e-25;
 
     public static ColumnCategory: string = 'Category';
-    public static ColumnX: string = 'X';
 
     private legend: ILegend;
 
@@ -172,9 +170,8 @@ export class EnhancedScatterChart implements IVisual {
             categories: DataViewCategoryColumn[] = dataViewCategorical.categories || [],
             dataValues: DataViewValueColumns = dataViewCategorical.values,
             hasDynamicSeries: boolean = !!dataValues.source,
-            grouped: DataViewValueColumnGroup[] = dataValues.grouped(),
             dvSource: DataViewMetadataColumn = dataValues.source,
-            scatterMetadata: EnhancedScatterChartMeasureMetadata = EnhancedScatterChart.getMetadata(categories, grouped),
+            scatterMetadata: EnhancedScatterChartMeasureMetadata = EnhancedScatterChart.getMetadata(categories),
             categoryIndex: number = scatterMetadata.idx.category;
 
         if (dataViewCategorical.categories
@@ -332,16 +329,13 @@ export class EnhancedScatterChart implements IVisual {
     }
 
     private static getMetadata(
-        categories: DataViewCategoryColumn[],
-        grouped: DataViewValueColumnGroup[]
+        categories: DataViewCategoryColumn[]
     ): EnhancedScatterChartMeasureMetadata {
-        let categoryIndex: number = getCategoryIndexOfRole(categories, EnhancedScatterChart.ColumnCategory),
-            xIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnX);
+        let categoryIndex: number = getCategoryIndexOfRole(categories, EnhancedScatterChart.ColumnCategory);
 
         return {
             idx: {
-                category: categoryIndex,
-                x: xIndex
+                category: categoryIndex
             }
         };
     }
