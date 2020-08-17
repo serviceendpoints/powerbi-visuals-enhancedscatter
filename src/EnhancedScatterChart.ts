@@ -36,7 +36,6 @@ type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
 // powerbi
 import DataView = powerbiVisualsApi.DataView;
 import IViewport = powerbiVisualsApi.IViewport;
-import DataViewObjects = powerbiVisualsApi.DataViewObjects;
 import DataViewCategorical = powerbiVisualsApi.DataViewCategorical;
 import DataViewValueColumns = powerbiVisualsApi.DataViewValueColumns;
 import DataViewMetadataColumn = powerbiVisualsApi.DataViewMetadataColumn;
@@ -85,17 +84,9 @@ import LegendDataPoint = legendInterfaces.LegendDataPoint;
 import LegendBehavior = legendBehavior.LegendBehavior;
 import createLegend = legendModule.createLegend;
 
-// powerbi.extensibility.utils.interactivity
-import {
-    interactivityBaseService as interactivityService,
-    interactivitySelectionService
-} from 'powerbi-visuals-utils-interactivityutils';
-import IInteractivityService = interactivityService.IInteractivityService;
-
 // powerbi.extensibility.utils.formatting
-import {textMeasurementService as tms, valueFormatter} from 'powerbi-visuals-utils-formattingutils';
+import {valueFormatter} from 'powerbi-visuals-utils-formattingutils';
 import IValueFormatter = valueFormatter.IValueFormatter;
-import textMeasurementService = tms.textMeasurementService;
 
 // powerbi.extensibility.utils.color
 import {ColorHelper} from 'powerbi-visuals-utils-colorutils';
@@ -108,7 +99,6 @@ import {
     EnhancedScatterChartMeasureMetadataIndexes
 }                                                    from './dataInterfaces';
 import * as gradientUtils                            from './gradientUtils';
-import {BaseDataPoint}                               from 'powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService';
 
 export class EnhancedScatterChart implements IVisual {
 
@@ -137,16 +127,6 @@ export class EnhancedScatterChart implements IVisual {
     public static ColumnX: string = 'X';
     public static ColumnY: string = 'Y';
     public static ColumnSize: string = 'Size';
-
-    public static ColumnColorFill: string = 'ColorFill';
-    public static ColumnShape: string = 'Shape';
-    public static ColumnImage: string = 'Image';
-    public static ColumnRotation: string = 'Rotation';
-    public static ColumnBackdrop: string = 'Backdrop';
-    public static ColumnXStart: string = 'XStart';
-    public static ColumnXEnd: string = 'XEnd';
-    public static ColumnYStart: string = 'YStart';
-    public static ColumnYEnd: string = 'YEnd';
 
     private legend: ILegend;
 
@@ -239,7 +219,6 @@ export class EnhancedScatterChart implements IVisual {
 
         let categoryValues: any[],
             categoryFormatter: IValueFormatter,
-            categoryObjects: DataViewObjects[],
             dataViewCategorical: DataViewCategorical = dataView.categorical,
             categories: DataViewCategoryColumn[] = dataViewCategorical.categories || [],
             dataValues: DataViewValueColumns = dataViewCategorical.values,
@@ -261,7 +240,6 @@ export class EnhancedScatterChart implements IVisual {
                 value2: categoryValues[categoryValues.length - 1]
             });
 
-            categoryObjects = mainCategory.objects;
         } else {
             categoryValues = [null];
             // creating default formatter for null value (to get the right string of empty value from the locale)
@@ -417,18 +395,9 @@ export class EnhancedScatterChart implements IVisual {
         grouped: DataViewValueColumnGroup[]
     ): EnhancedScatterChartMeasureMetadata {
         let categoryIndex: number = getCategoryIndexOfRole(categories, EnhancedScatterChart.ColumnCategory),
-            colorFillIndex: number = getCategoryIndexOfRole(categories, EnhancedScatterChart.ColumnColorFill),
-            imageIndex: number = getCategoryIndexOfRole(categories, EnhancedScatterChart.ColumnImage),
-            backdropIndex: number = getCategoryIndexOfRole(categories, EnhancedScatterChart.ColumnBackdrop),
             xIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnX),
             yIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnY),
             sizeIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnSize),
-            shapeIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnShape),
-            rotationIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnRotation),
-            xStartIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnXStart),
-            xEndIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnXEnd),
-            yStartIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnYStart),
-            yEndIndex: number = getMeasureIndexOfRole(grouped, EnhancedScatterChart.ColumnYEnd),
             xCol: DataViewMetadataColumn,
             yCol: DataViewMetadataColumn,
             sizeCol: DataViewMetadataColumn,
