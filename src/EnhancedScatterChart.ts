@@ -161,8 +161,6 @@ import * as gradientUtils                                                       
 import {tooltipBuilder}                                                                    from './tooltipBuilder';
 import {BaseDataPoint}                                                                     from 'powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService';
 
-const getEvent = () => require('d3-selection').event;
-
 interface ShapeFunction {
     (value: any): string;
 }
@@ -200,15 +198,9 @@ export class EnhancedScatterChart implements IVisual {
 
     private static DefaultMarginValue: number = 1;
 
-    public static CrosshairCanvasSelector: ClassAndSelector = createClassAndSelector('crosshairCanvas');
-
     public static SvgScrollableSelector: ClassAndSelector = createClassAndSelector('svgScrollable');
 
-    public static ShowLinesOnAxisSelector: ClassAndSelector = createClassAndSelector('showLinesOnAxis');
-    public static HideLinesOnAxisSelector: ClassAndSelector = createClassAndSelector('hideLinesOnAxis');
-
     public static XAxisSelector: ClassAndSelector = createClassAndSelector('x axis');
-    public static YAxisSelector: ClassAndSelector = createClassAndSelector('y axis');
 
     private static NumberSignZero: number = 0;
     private static NumberSignPositive: number = 1;
@@ -217,7 +209,6 @@ export class EnhancedScatterChart implements IVisual {
     public static MinTranslateValue: number = 1e-25;
 
     public static ColumnCategory: string = 'Category';
-    public static ColumnSeries: string = 'Series';
     public static ColumnX: string = 'X';
     public static ColumnY: string = 'Y';
     public static ColumnSize: string = 'Size';
@@ -242,22 +233,16 @@ export class EnhancedScatterChart implements IVisual {
     public static RMask: number = 1;
     public static RMaskResult: number = 0;
 
-    private tooltipServiceWrapper: ITooltipServiceWrapper;
-
     private legend: ILegend;
 
     private element: HTMLElement;
     private svgScrollable: Selection<any>;
     private axisGraphicsContext: Selection<any>;
     private axisGraphicsContextScrollable: Selection<any>;
-    private xAxisGraphicsContext: Selection<any>;
-    private backgroundGraphicsContext: Selection<any>;
-    private yAxisGraphicsContext: Selection<any>;
+
     private svg: Selection<any>;
-    private mainGraphicsSVGSelection: Selection<any>;
-    private mainGraphicsContext: Selection<any>;
+
     private clearCatcher: Selection<any>;
-    private mainGraphicsG: Selection<any>;
 
     private data: EnhancedScatterChartData;
 
@@ -266,9 +251,6 @@ export class EnhancedScatterChart implements IVisual {
     private interactivityService: IInteractivityService<BaseDataPoint>;
     private eventService: IVisualEventService;
     private selectionManager: ISelectionManager;
-
-    private scrollY: boolean = true;
-    private scrollX: boolean = true;
 
     private visualHost: IVisualHost;
 
@@ -443,11 +425,6 @@ export class EnhancedScatterChart implements IVisual {
         this.visualHost = options.host;
         this.colorPalette = options.host.colorPalette;
 
-        this.tooltipServiceWrapper = createTooltipServiceWrapper(
-            this.visualHost.tooltipService,
-            this.element
-        );
-
         this.selectionManager = this.visualHost.createSelectionManager();
         this.eventService = options.host.eventService;
 
@@ -478,46 +455,6 @@ export class EnhancedScatterChart implements IVisual {
 
         this.clearCatcher = appendClearCatcher(this.axisGraphicsContextScrollable);
 
-        const axisGroup: Selection<any> = this.scrollY
-            ? this.axisGraphicsContextScrollable
-            : this.axisGraphicsContext;
-
-        this.backgroundGraphicsContext = this.axisGraphicsContext.append('svg:image');
-
-        this.xAxisGraphicsContext = this.scrollY
-            ? this.axisGraphicsContext
-                  .append('g')
-                  .classed(EnhancedScatterChart.XAxisSelector.className, true)
-            : this.axisGraphicsContextScrollable
-                  .append('g')
-                  .classed(EnhancedScatterChart.XAxisSelector.className, true);
-
-        this.yAxisGraphicsContext = axisGroup
-            .append('g')
-            .classed(EnhancedScatterChart.YAxisSelector.className, true);
-
-        this.xAxisGraphicsContext.classed(
-            EnhancedScatterChart.ShowLinesOnAxisSelector.className,
-            this.scrollY
-        );
-
-        this.yAxisGraphicsContext.classed(
-            EnhancedScatterChart.ShowLinesOnAxisSelector.className,
-            this.scrollX
-        );
-
-        this.xAxisGraphicsContext.classed(
-            EnhancedScatterChart.HideLinesOnAxisSelector.className,
-            !this.scrollY
-        );
-
-        this.yAxisGraphicsContext.classed(
-            EnhancedScatterChart.HideLinesOnAxisSelector.className,
-            !this.scrollX
-        );
-
-        this.interactivityService = createInteractivitySelectionService(this.visualHost);
-
         this.legend = createLegend(
             this.element,
             false,
@@ -529,12 +466,6 @@ export class EnhancedScatterChart implements IVisual {
                 : new LegendBehavior()
         );
 
-        this.mainGraphicsG = this.axisGraphicsContextScrollable
-                                 .append('g')
-                                 .classed(EnhancedScatterChart.MainGraphicsContextClassName, true);
-
-        this.mainGraphicsSVGSelection = this.mainGraphicsG.append('svg');
-        this.mainGraphicsContext = this.mainGraphicsSVGSelection.append('g');
     }
 
     private adjustMargins(): void {
@@ -1383,8 +1314,6 @@ export class EnhancedScatterChart implements IVisual {
 
         legendModule.positionChartArea(this.svg, legend);
     }
-
-
 
     /**
      * Public for testability.
