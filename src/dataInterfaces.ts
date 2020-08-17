@@ -23,7 +23,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbiVisualsApi from 'powerbi-visuals-api';
 
 import IViewport = powerbiVisualsApi.IViewport;
 import DataViewMetadataColumn = powerbiVisualsApi.DataViewMetadataColumn;
@@ -34,36 +34,17 @@ import NumberRange = powerbiVisualsApi.NumberRange;
 import ISelectionId = powerbiVisualsApi.visuals.ISelectionId;
 
 // powerbi.extensibility.utils.interactivity
-import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
+import {interactivitySelectionService as interactivityService} from 'powerbi-visuals-utils-interactivityutils';
 import SelectableDataPoint = interactivityService.SelectableDataPoint;
 
 // powerbi.extensibility.utils.tooltip
-import { TooltipEnabledDataPoint } from "powerbi-visuals-utils-tooltiputils";
+import {TooltipEnabledDataPoint} from 'powerbi-visuals-utils-tooltiputils';
 
 // powerbi.extensibility.utils.chart
-import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
+import {legendInterfaces} from 'powerbi-visuals-utils-chartutils';
 import LegendDataPoint = legendInterfaces.LegendDataPoint;
 
-// powerbi.extensibility.utils.svg
-import * as SVGUtil from "powerbi-visuals-utils-svgutils";
-import IMargin = SVGUtil.IMargin;
-import IRect = SVGUtil.IRect;
-import ISize = SVGUtil.shapesInterfaces.ISize;
-
-import { Settings } from "./settings";
-
-export interface ElementProperty {
-    [propertyName: string]: any;
-}
-
-export interface ElementProperties {
-    name: string;
-    selector: string;
-    className?: string;
-    data?: any;
-    styles?: ElementProperty;
-    attributes?: ElementProperty;
-}
+import {Settings} from './settings';
 
 export interface EnhancedScatterChartMeasureMetadataIndexes {
     category?: number;
@@ -89,79 +70,7 @@ export interface ChartAxesLabels {
     y2?: string;
 }
 
-export interface EnhancedScatterChartRadiusData {
-    sizeMeasure: DataViewValueColumn;
-    index: number;
-}
-
-// Defines possible content positions.
-export const enum ContentPositions {
-
-    // Content position is not defined.
-    None = 0,
-
-    // Content aligned top left.
-    TopLeft = 1,
-
-    // Content aligned top center.
-    TopCenter = 2,
-
-    // Content aligned top right.
-    TopRight = 4,
-
-    // Content aligned middle left.
-    MiddleLeft = 8,
-
-    // Content aligned middle center.
-    MiddleCenter = 16,
-
-    // Content aligned middle right.
-    MiddleRight = 32,
-
-    // Content aligned bottom left.
-    BottomLeft = 64,
-
-    // Content aligned bottom center.
-    BottomCenter = 128,
-
-    // Content aligned bottom right.
-    BottomRight = 256,
-
-    // Content is placed inside the bounding rectangle in the center.
-    InsideCenter = 512,
-
-    // Content is placed inside the bounding rectangle at the base.
-    InsideBase = 1024,
-
-    // Content is placed inside the bounding rectangle at the end.
-    InsideEnd = 2048,
-
-    // Content is placed outside the bounding rectangle at the base.
-    OutsideBase = 4096,
-
-    // Content is placed outside the bounding rectangle at the end.
-    OutsideEnd = 8192,
-
-    // Content supports all possible positions.
-    All =
-    TopLeft |
-    TopCenter |
-    TopRight |
-    MiddleLeft |
-    MiddleCenter |
-    MiddleRight |
-    BottomLeft |
-    BottomCenter |
-    BottomRight |
-    InsideCenter |
-    InsideBase |
-    InsideEnd |
-    OutsideBase |
-    OutsideEnd,
-}
-
-export interface EnhancedScatterChartDataPoint extends
-    SelectableDataPoint,
+export interface EnhancedScatterChartDataPoint extends SelectableDataPoint,
     TooltipEnabledDataPoint {
     fill: string;
     formattedCategory: () => string;

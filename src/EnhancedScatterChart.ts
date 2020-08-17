@@ -137,24 +137,16 @@ import getTailoredTextOrDefault = textMeasurementService.getTailoredTextOrDefaul
 // powerbi.extensibility.utils.color
 import {ColorHelper} from 'powerbi-visuals-utils-colorutils';
 
-// powerbi.extensibility.utils.tooltip
-import {
-    createTooltipServiceWrapper,
-    TooltipEventArgs,
-    ITooltipServiceWrapper,
-    TooltipEnabledDataPoint
-} from 'powerbi-visuals-utils-tooltiputils';
-
-import {AxisSettings, DataPointSettings, LegendSettings, CategoryLabelsSettings, Settings} from './settings';
+import {DataPointSettings, LegendSettings, Settings} from './settings';
 import {
     EnhancedScatterChartData,
     EnhancedScatterChartDataPoint,
     EnhancedScatterChartMeasureMetadata,
     EnhancedScatterChartMeasureMetadataIndexes
-}                                                                                          from './dataInterfaces';
-import * as gradientUtils                                                                  from './gradientUtils';
-import {tooltipBuilder}                                                                    from './tooltipBuilder';
-import {BaseDataPoint}                                                                     from 'powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService';
+}                                                    from './dataInterfaces';
+import * as gradientUtils                            from './gradientUtils';
+import {tooltipBuilder}                              from './tooltipBuilder';
+import {BaseDataPoint}                               from 'powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService';
 
 interface ShapeFunction {
     (value: any): string;
@@ -445,8 +437,6 @@ export class EnhancedScatterChart implements IVisual {
             categoryFormatter = valueFormatter.createDefaultFormatter(null);
         }
 
-
-
         const colorHelper: ColorHelper = new ColorHelper(
             colorPalette,
             {
@@ -506,13 +496,6 @@ export class EnhancedScatterChart implements IVisual {
         legendTitle: string): void {
 
         settings.legend.titleText = settings.legend.titleText || legendTitle;
-        if (!settings.categoryAxis.showAxisTitle) {
-            scatterMetadata.axesLabels.x = null;
-        }
-
-        if (!settings.valueAxis.showAxisTitle) {
-            scatterMetadata.axesLabels.y = null;
-        }
 
     }
 
@@ -605,34 +588,6 @@ export class EnhancedScatterChart implements IVisual {
         return legendItems;
     }
 
-    private static getSizeRangeForGroups(
-        dataViewValueGroups: DataViewValueColumnGroup[],
-        sizeColumnIndex: number
-    ): NumberRange {
-
-        const result: NumberRange = {};
-
-        if (dataViewValueGroups) {
-            dataViewValueGroups.forEach((group) => {
-                const sizeColumn: DataViewValueColumn = EnhancedScatterChart.getMeasureValue(
-                    sizeColumnIndex,
-                    group.values);
-
-                const currentRange: NumberRange = axis.getRangeForColumn(sizeColumn);
-
-                if (result.min == null || result.min > currentRange.min) {
-                    result.min = currentRange.min;
-                }
-
-                if (result.max == null || result.max < currentRange.max) {
-                    result.max = currentRange.max;
-                }
-            });
-        }
-
-        return result;
-    }
-
     private static getMetadata(
         categories: DataViewCategoryColumn[],
         grouped: DataViewValueColumnGroup[]
@@ -716,7 +671,6 @@ export class EnhancedScatterChart implements IVisual {
             indicies.x,
             seriesValues
         );
-
 
         return {
             // measureX,
@@ -950,7 +904,6 @@ export class EnhancedScatterChart implements IVisual {
                     seriesData
                 );
                 const currentFill: string = parsedColorFill || color;
-                const stroke: string = settings.outline.show ? d3.rgb(currentFill).darker().toString() : currentFill;
                 const fill: string = settings.fillPoint.show || settings.fillPoint.isHidden ? currentFill : null;
 
                 dataPoints.push({
