@@ -191,11 +191,6 @@ export class EnhancedScatterChart implements IVisual {
 
     private static MinAmountOfDataPointsInTheLegend: number = 1;
 
-    private static MinViewport: IViewport = {
-        width: 0,
-        height: 0
-    };
-
     private static DefaultMarginValue: number = 1;
 
     public static SvgScrollableSelector: ClassAndSelector = createClassAndSelector('svgScrollable');
@@ -254,49 +249,12 @@ export class EnhancedScatterChart implements IVisual {
 
     private visualHost: IVisualHost;
 
-    private _margin: IMargin;
-    private get margin(): IMargin {
-        return this._margin || {
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0
-        };
-    }
+    private margin: IMargin;
 
-    private set margin(value: IMargin) {
-        this._margin = $.extend({}, value);
-        this._viewportIn = EnhancedScatterChart.substractMargin(this.viewport, this.margin);
-    }
-
-    private _viewport: IViewport;
-    private get viewport(): IViewport {
-        return this._viewport || {
-            width: 0,
-            height: 0
-        };
-    }
-
-    private set viewport(value: IViewport) {
-        this._viewport = $.extend({}, value);
-        this._viewportIn = EnhancedScatterChart.substractMargin(this.viewport, this.margin);
-    }
-
-    private _viewportIn: IViewport;
-    private get viewportIn(): IViewport {
-        return this._viewportIn || this.viewport;
-    }
-
-    private static substractMargin(viewport: IViewport, margin: IMargin): IViewport {
-        return {
-            width: Math.max(
-                viewport.width - (margin.left + margin.right),
-                EnhancedScatterChart.MinViewport.width),
-            height: Math.max(
-                viewport.height - (margin.top + margin.bottom),
-                EnhancedScatterChart.MinViewport.height)
-        };
-    }
+    private viewport: IViewport = {
+        width: 0,
+        height: 0
+    };
 
     private static getCustomSymbolType(shape: any): ShapeFunction {
         const customSymbolTypes = d3.map<ShapeFunction>({
@@ -435,8 +393,6 @@ export class EnhancedScatterChart implements IVisual {
             left: EnhancedScatterChart.DefaultMarginValue
         };
 
-        this.adjustMargins();
-
         this.svg = d3.select(this.element)
                      .append('svg')
                      .classed(EnhancedScatterChart.ClassName, true);
@@ -466,27 +422,6 @@ export class EnhancedScatterChart implements IVisual {
                 : new LegendBehavior()
         );
 
-    }
-
-    private adjustMargins(): void {
-        // Adjust margins if ticks are not going to be shown on either axis
-        const xAxis: JQuery = $(this.element).find(EnhancedScatterChart.XAxisSelector.selectorName);
-
-        if (axis.getRecommendedNumberOfTicksForXAxis(this.viewportIn.width) === EnhancedScatterChart.MinAmountOfTicks
-            && axis.getRecommendedNumberOfTicksForYAxis(this.viewportIn.height) === EnhancedScatterChart.MinAmountOfTicks
-        ) {
-
-            this.margin = {
-                top: EnhancedScatterChart.DefaultMarginValue,
-                right: EnhancedScatterChart.DefaultMarginValue,
-                bottom: EnhancedScatterChart.DefaultMarginValue,
-                left: EnhancedScatterChart.DefaultMarginValue
-            };
-
-            xAxis.hide();
-        } else {
-            xAxis.show();
-        }
     }
 
     public parseData(
