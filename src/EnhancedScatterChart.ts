@@ -177,8 +177,6 @@ export class EnhancedScatterChart implements IVisual {
     private static AxisGraphicsContextClassName: string = 'axisGraphicsContext';
     private static ClassName: string = 'enhancedScatterChart';
     private static MainGraphicsContextClassName: string = 'mainGraphicsContext';
-    private static AxisFontSize: number = 11;
-    private static CrosshairTextMargin: number = 5;
 
     private static MinAmountOfTicks: number = 0;
     private static MinAmountOfCategories: number = 0;
@@ -187,11 +185,6 @@ export class EnhancedScatterChart implements IVisual {
     private static MinIndex: number = 0;
 
     private static EmptyString: string = '';
-
-    private static DefaultCrosshairYPosition: number = 1;
-    private static CrosshairPrecision: number = 0.00001;
-    private static CrosshairStartPosition: number = 0;
-    private static CrosshairScaleFactor: number = 100;
 
     private static DefaultSelectionStateOfTheDataPoint: boolean = false;
     private static DefaultContentPosition: number = 8;
@@ -217,18 +210,11 @@ export class EnhancedScatterChart implements IVisual {
     public static XAxisSelector: ClassAndSelector = createClassAndSelector('x axis');
     public static YAxisSelector: ClassAndSelector = createClassAndSelector('y axis');
 
-    private static MinAxisValue: number = 0;
-    private static MaxAxisValue: number = 10;
-
-    private static OuterPadding: number = 0;
-
     private static NumberSignZero: number = 0;
     private static NumberSignPositive: number = 1;
 
     public static MaxTranslateValue: number = 1e+25;
     public static MinTranslateValue: number = 1e-25;
-
-
 
     public static ColumnCategory: string = 'Category';
     public static ColumnSeries: string = 'Series';
@@ -273,15 +259,8 @@ export class EnhancedScatterChart implements IVisual {
     private clearCatcher: Selection<any>;
     private mainGraphicsG: Selection<any>;
 
-    private crosshairCanvasSelection: Selection<any>;
-    private crosshairVerticalLineSelection: Selection<any>;
-    private crosshairHorizontalLineSelection: Selection<any>;
-    private crosshairTextSelection: Selection<any>;
-
     private data: EnhancedScatterChartData;
 
-    private xAxisProperties: IAxisProperties;
-    private yAxisProperties: IAxisProperties;
     private colorPalette: ISandboxExtendedColorPalette;
 
     private interactivityService: IInteractivityService<BaseDataPoint>;
@@ -292,7 +271,6 @@ export class EnhancedScatterChart implements IVisual {
     private scrollX: boolean = true;
 
     private visualHost: IVisualHost;
-
 
     private _margin: IMargin;
     private get margin(): IMargin {
@@ -457,7 +435,7 @@ export class EnhancedScatterChart implements IVisual {
         }
 
         this.init(options);
-        this.handleContextMenu();
+
     }
 
     public init(options: VisualConstructorOptions): void {
@@ -557,19 +535,6 @@ export class EnhancedScatterChart implements IVisual {
 
         this.mainGraphicsSVGSelection = this.mainGraphicsG.append('svg');
         this.mainGraphicsContext = this.mainGraphicsSVGSelection.append('g');
-    }
-
-    public handleContextMenu() {
-        this.svg.on('contextmenu', () => {
-            const mouseEvent: MouseEvent = getEvent();
-            const eventTarget: EventTarget = mouseEvent.target;
-            let dataPoint: any = d3.select(<d3.BaseType>eventTarget).datum();
-            this.selectionManager.showContextMenu(dataPoint ? dataPoint.selectionId : {}, {
-                x: mouseEvent.clientX,
-                y: mouseEvent.clientY
-            });
-            mouseEvent.preventDefault();
-        });
     }
 
     private adjustMargins(): void {
@@ -1419,221 +1384,7 @@ export class EnhancedScatterChart implements IVisual {
         legendModule.positionChartArea(this.svg, legend);
     }
 
-    /**
-     * Public for testability.
-     */
-    public bindCrosshairEvents(): void {
-        if (!this.axisGraphicsContextScrollable) {
-            return;
-        }
 
-        this.axisGraphicsContextScrollable
-            .on('mousemove', () => {
-                const event: MouseEvent = <MouseEvent>getEvent();
-                let currentTarget = <SVGAElement>event.currentTarget,
-                    svgNode: SVGElement = currentTarget.viewportElement,
-                    scaledRect: ClientRect = svgNode.getBoundingClientRect(),
-                    domRect: SVGRect = (<any>svgNode).getBBox(),
-                    ratioX: number = scaledRect.width / domRect.width,
-                    ratioY: number = scaledRect.height / domRect.height,
-                    x: number = event.pageX,
-                    y: number = event.pageY;
-
-                if (domRect.width > EnhancedScatterChart.MinViewport.width
-                    && !equalWithPrecision(
-                        ratioX,
-                        EnhancedScatterChart.DefaultCrosshairYPosition,
-                        EnhancedScatterChart.CrosshairPrecision)) {
-
-                    x = x / ratioX;
-                }
-
-                if (domRect.height > EnhancedScatterChart.MinViewport.height
-                    && !equalWithPrecision(
-                        ratioY,
-                        EnhancedScatterChart.DefaultCrosshairYPosition,
-                        EnhancedScatterChart.CrosshairPrecision)) {
-
-                    y = y / ratioY;
-                }
-
-                this.updateCrosshair(x, y);
-            })
-            .on('mouseover', () => {
-                this.crosshairCanvasSelection.style('display', 'block');
-            })
-            .on('mouseout', () => {
-                this.crosshairCanvasSelection.style('display', 'none');
-            });
-    }
-
-    /**
-     * Public for testability.
-     */
-    public updateCrosshair(x: number, y: number): void {
-        if (!this.viewportIn
-            || !this.crosshairHorizontalLineSelection
-            || !this.crosshairVerticalLineSelection
-            || !this.crosshairTextSelection
-            || !this.xAxisProperties) {
-
-            return;
-        }
-
-        let crosshairTextMargin: number = EnhancedScatterChart.CrosshairTextMargin,
-            xScale = <ScaleLinear<number, number>>this.xAxisProperties.scale,
-            yScale = <ScaleLinear<number, number>>this.yAxisProperties.scale,
-            xFormated: number,
-            yFormated: number;
-
-        this.crosshairHorizontalLineSelection
-            .attr('x1', EnhancedScatterChart.CrosshairStartPosition)
-            .attr('y1', y)
-            .attr('x2', this.viewportIn.width)
-            .attr('y2', y);
-
-        this.crosshairVerticalLineSelection
-            .attr('x1', x)
-            .attr('y1', EnhancedScatterChart.CrosshairStartPosition)
-            .attr('x2', x)
-            .attr('y2', this.viewportIn.height);
-
-        xFormated = Math.round(xScale.invert(x) * EnhancedScatterChart.CrosshairScaleFactor)
-            / EnhancedScatterChart.CrosshairScaleFactor;
-
-        yFormated = Math.round(yScale.invert(y) * EnhancedScatterChart.CrosshairScaleFactor)
-            / EnhancedScatterChart.CrosshairScaleFactor;
-
-        this.crosshairTextSelection
-            .attr('x', x + crosshairTextMargin)
-            .attr('y', y - crosshairTextMargin)
-            .text(`(${xFormated}, ${yFormated})`);
-    }
-
-    /**
-     * Public for testability.
-     */
-    public addElementToDOM(
-        rootElement: Selection<any>,
-        properties: ElementProperties
-    ): Selection<any> {
-
-        if (!rootElement || !properties) {
-            return null;
-        }
-
-        let elementSelection: Selection<any>,
-            elementUpdateSelection: Selection<any>;
-
-        elementSelection = rootElement.selectAll(properties.selector);
-
-        elementUpdateSelection = elementSelection.data(properties.data || [[]]);
-
-        const elementUpdateSelectionMerged = elementUpdateSelection
-            .enter()
-            .append(properties.name)
-            .merge(elementUpdateSelection);
-
-        const propertiesAttributes = properties.attributes ? Object.keys(properties.attributes) : [];
-        for (let propKey of propertiesAttributes) {
-            elementUpdateSelectionMerged.attr(propKey, properties.attributes[propKey]);
-        }
-
-        const propertiesStyles = properties.styles ? Object.keys(properties.styles) : [];
-        for (let propKey of propertiesStyles) {
-            elementUpdateSelectionMerged.attr(propKey, properties.styles[propKey]);
-        }
-
-        elementUpdateSelectionMerged
-            .classed(properties.className, true);
-
-        elementUpdateSelection
-            .exit()
-            .remove();
-
-        return elementUpdateSelectionMerged;
-    }
-
-    public calculateAxesProperties(options: CalculateScaleAndDomainOptions): IAxisProperties[] {
-        const data: EnhancedScatterChartData = this.data,
-            dataPoints: EnhancedScatterChartDataPoint[] = data.dataPoints;
-
-        this.margin = options.margin;
-        this.viewport = options.viewport;
-
-        let minY: number = EnhancedScatterChart.MinAxisValue,
-            maxY: number = EnhancedScatterChart.MaxAxisValue,
-            minX: number = EnhancedScatterChart.MinAxisValue,
-            maxX: number = EnhancedScatterChart.MaxAxisValue;
-
-        if (dataPoints.length > 0) {
-            minY = d3.min<EnhancedScatterChartDataPoint, number>(dataPoints, dataPoint => dataPoint.y);
-            maxY = d3.max<EnhancedScatterChartDataPoint, number>(dataPoints, dataPoint => dataPoint.y);
-            minX = d3.min<EnhancedScatterChartDataPoint, number>(dataPoints, dataPoint => dataPoint.x);
-            maxX = d3.max<EnhancedScatterChartDataPoint, number>(dataPoints, dataPoint => dataPoint.x);
-        }
-
-        const xDomain: number[] = [minX, maxX];
-
-        const combinedXDomain: number[] = axis.combineDomain(
-            this.optimizeTranslateValues(options.forcedXDomain),
-            xDomain
-        );
-
-        const xAxisFormatString: string = valueFormatter.getFormatStringByColumn(data.xCol);
-
-        this.xAxisProperties = axis.createAxis({
-            pixelSpan: this.viewportIn.width,
-            dataDomain: combinedXDomain,
-            metaDataColumn: data.xCol,
-            formatString: xAxisFormatString,
-            outerPadding: EnhancedScatterChart.OuterPadding,
-            isScalar: true,
-            isVertical: false,
-            getValueFn: (index, dataType) => dataType.dateTime ? EnhancedScatterChart.displayTimestamp(index) : index,
-            forcedTickCount: options.forcedTickCount,
-            useTickIntervalForDisplayUnits: true,
-            isCategoryAxis: true, // scatter doesn"t have a categorical axis, but this is needed for the pane to react correctly to the x-axis toggle one/off
-            scaleType: options.categoryAxisScaleType,
-            axisDisplayUnits: options.categoryAxisDisplayUnits
-        });
-
-        this.xAxisProperties.axis
-            .tickSize(-this.viewportIn.height)
-            .tickSizeOuter(EnhancedScatterChart.OuterPadding);
-
-        this.xAxisProperties.axisLabel = this.data.axesLabels.x;
-
-        const combinedYDomain: number[] = axis.combineDomain(
-            this.optimizeTranslateValues(options.forcedYDomain),
-            [minY, maxY]
-        );
-
-        const yAxisFormatString: string = valueFormatter.getFormatStringByColumn(data.yCol);
-
-        this.yAxisProperties = axis.createAxis({
-            pixelSpan: this.viewportIn.height,
-            dataDomain: combinedYDomain,
-            metaDataColumn: data.yCol,
-            formatString: yAxisFormatString,
-            outerPadding: EnhancedScatterChart.OuterPadding,
-            isScalar: true,
-            isVertical: true,
-            getValueFn: (index, dataType) => dataType.dateTime ? EnhancedScatterChart.displayTimestamp(index) : index,
-            forcedTickCount: options.forcedTickCount,
-            useTickIntervalForDisplayUnits: true,
-            isCategoryAxis: false,
-            scaleType: options.valueAxisScaleType,
-            axisDisplayUnits: options.valueAxisDisplayUnits
-        });
-
-        this.yAxisProperties.axisLabel = this.data.axesLabels.y;
-
-        return [
-            this.xAxisProperties,
-            this.yAxisProperties
-        ];
-    }
 
     /**
      * Public for testability.
