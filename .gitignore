@@ -8,3 +8,8 @@ typings
 /coverage
 
 webpack.statistics.*.html
+/.idea/modules.xml
+/.idea/powerbi-visuals-enhancedscatter.iml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
