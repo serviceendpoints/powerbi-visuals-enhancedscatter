@@ -17,6 +17,12 @@
             "kind": "Measure",
             "displayName": "X Axis",
             "displayNameKey": "Role_DisplayName_X"
+        },
+        {
+            "name": "Y",
+            "kind": "Measure",
+            "displayName": "Y Axis",
+            "displayNameKey": "Role_DisplayName_X"
         }
     ],
     "dataViewMappings": [
