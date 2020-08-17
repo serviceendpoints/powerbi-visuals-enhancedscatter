@@ -818,18 +818,18 @@ export class EnhancedScatterChart implements IVisual {
         );
 
         return {
-            measureX,
-            measureY,
-            measureSize,
-            measureShape,
-            measureRotation,
-            measureXStart,
-            measureXEnd,
-            measureYStart,
-            measureYEnd,
-            measureColorFill: categories[indicies.colorFill],
-            measureImage: categories[indicies.image],
-            measureBackdrop: categories[indicies.backdrop]
+            // measureX,
+            // measureY,
+            // measureSize,
+            // measureShape,
+            // measureRotation,
+            // measureXStart,
+            // measureXEnd,
+            // measureYStart,
+            // measureYEnd,
+            // measureColorFill: categories[indicies.colorFill],
+            // measureImage: categories[indicies.image],
+            // measureBackdrop: categories[indicies.backdrop]
         };
     }
 
@@ -994,13 +994,13 @@ export class EnhancedScatterChart implements IVisual {
                 let measures: { [propertyName: string]: DataViewValueColumn } = this.calculateMeasures(seriesValues, indicies, categories);
 
                 // TO BE CHANGED: need to update (refactor) these lines below.
-                const xVal: PrimitiveValue = EnhancedScatterChart.getDefinedNumberByCategoryId(measures.measureX, categoryIdx, metadata.cols.x.type);
-                const yVal: PrimitiveValue = EnhancedScatterChart.getDefinedNumberByCategoryId(measures.measureY, categoryIdx, metadata.cols.y.type);
-                const hasNullValue: boolean = (xVal == null) || (yVal == null);
-
-                if (hasNullValue) {
-                    continue;
-                }
+                // const xVal: PrimitiveValue = EnhancedScatterChart.getDefinedNumberByCategoryId(measures.measureX, categoryIdx, metadata.cols.x.type);
+                // const yVal: PrimitiveValue = EnhancedScatterChart.getDefinedNumberByCategoryId(measures.measureY, categoryIdx, metadata.cols.y.type);
+                // const hasNullValue: boolean = (xVal == null) || (yVal == null);
+                //
+                // if (hasNullValue) {
+                //     continue;
+                // }
 
                 const {size, colorFill, shapeSymbolType, image, rotation, backdrop, xStart, xEnd, yStart, yEnd} =
                     this.getValuesFromDataViewValueColumnById(measures, categoryIdx);
@@ -1041,7 +1041,7 @@ export class EnhancedScatterChart implements IVisual {
                     });
                 }
 
-                this.changeSeriesData(measures, seriesData, xVal, yVal, categoryIdx);
+                this.changeSeriesData(measures, seriesData, 0, 0, categoryIdx);
 
                 const tooltipInfo: VisualTooltipDataItem[] = tooltipBuilder.createTooltipInfo(
                     categoryValue,
@@ -1065,8 +1065,8 @@ export class EnhancedScatterChart implements IVisual {
                     identity,
                     shapeSymbolType,
                     tooltipInfo,
-                    x: xVal,
-                    y: yVal,
+                    x: 0,
+                    y: 0,
                     radius: {
                         sizeMeasure: measures.measureSize,
                         index: categoryIdx
