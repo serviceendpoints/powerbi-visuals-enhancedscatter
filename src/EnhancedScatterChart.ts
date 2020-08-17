@@ -286,7 +286,6 @@ export class EnhancedScatterChart implements IVisual {
             categories,
             categoryValues,
             categoryFormatter,
-            categoryObjects,
             hasDynamicSeries,
             colorHelper,
             settings
@@ -482,7 +481,6 @@ export class EnhancedScatterChart implements IVisual {
         categories: DataViewCategoryColumn[],
         categoryValues: any[],
         categoryFormatter: IValueFormatter,
-        categoryObjects: DataViewObjects[],
         hasDynamicSeries: boolean,
         colorHelper: ColorHelper,
         settings: Settings
