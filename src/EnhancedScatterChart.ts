@@ -539,30 +539,6 @@ export class EnhancedScatterChart implements IVisual {
             scatterMetadata.axesLabels.y = null;
         }
 
-        if (dataPoints && dataPoints[0]) {
-            const dataPoint: EnhancedScatterChartDataPoint = dataPoints[0];
-
-            if (dataPoint.backdrop != null) {
-                settings.backdrop.show = true;
-                settings.backdrop.url = dataPoint.backdrop;
-            }
-
-            if (dataPoint.xStart != null) {
-                settings.categoryAxis.start = dataPoint.xStart;
-            }
-
-            if (dataPoint.xEnd != null) {
-                settings.categoryAxis.end = dataPoint.xEnd;
-            }
-
-            if (dataPoint.yStart != null) {
-                settings.valueAxis.start = dataPoint.yStart;
-            }
-
-            if (dataPoint.yEnd != null) {
-                settings.valueAxis.end = dataPoint.yEnd;
-            }
-        }
     }
 
     private parseLegend(
@@ -1053,29 +1029,10 @@ export class EnhancedScatterChart implements IVisual {
                 const fill: string = settings.fillPoint.show || settings.fillPoint.isHidden ? currentFill : null;
 
                 dataPoints.push({
-                    size,
-                    rotation,
-                    backdrop,
-                    xStart,
-                    xEnd,
                     fill,
-                    stroke,
-                    yStart,
-                    yEnd,
                     identity,
-                    shapeSymbolType,
-                    tooltipInfo,
-                    x: 0,
-                    y: 0,
-                    radius: {
-                        sizeMeasure: measures.measureSize,
-                        index: categoryIdx
-                    },
-                    strokeWidth: settings.dataPoint.strokeWidth,
                     formattedCategory: EnhancedScatterChart.CREATE_LAZY_FORMATTED_CATEGORY(categoryFormatter, categoryValue),
-                    selected: EnhancedScatterChart.DefaultSelectionStateOfTheDataPoint,
-                    contentPosition: EnhancedScatterChart.DefaultContentPosition,
-                    svgurl: image
+                    selected: EnhancedScatterChart.DefaultSelectionStateOfTheDataPoint
                 });
             }
         }

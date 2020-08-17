@@ -173,25 +173,8 @@ export const enum ContentPositions {
 export interface EnhancedScatterChartDataPoint extends
     SelectableDataPoint,
     TooltipEnabledDataPoint {
-
-    x: any;
-    y: any;
-    size: number | ISize;
-    radius: EnhancedScatterChartRadiusData;
     fill: string;
-    stroke: string;
-    strokeWidth: number;
-    contentPosition: ContentPositions;
     formattedCategory: () => string;
-    svgurl?: string;
-    shapeSymbolType?: (value: number) => string;
-    rotation: number;
-    backdrop?: string;
-    xStart?: number;
-    xEnd?: number;
-    yStart?: number;
-    yEnd?: number;
-    highlight?: boolean;
 }
 
 export interface EnhancedScatterChartAxesLabels {
