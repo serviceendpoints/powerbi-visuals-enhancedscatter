@@ -3,7 +3,7 @@
         {
             "name": "Category",
             "kind": "Grouping",
-            "displayName": "Details",
+            "displayName": "Category",
             "displayNameKey": "Role_DisplayName_Details"
         },
         {
